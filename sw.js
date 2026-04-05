@@ -3,7 +3,7 @@ const BASE = self.location.pathname.replace(/\/sw\.js$/, '');
 
 const STATIC_ASSETS = [
   `${BASE}/`,
-  `${BASE}/ironlog.html`,
+  `${BASE}/index.html`,
   `${BASE}/manifest.json`,
   `${BASE}/Assets/logo.jpg`,
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap',
@@ -53,7 +53,7 @@ self.addEventListener('fetch', event => {
     if (asset.startsWith('http')) return request.url === asset;
     const assetPath = new URL(asset, self.location.origin).pathname;
     return url.pathname === assetPath || 
-           url.pathname === assetPath.replace(/\/ironlog\.html$/, '/');
+           url.pathname === assetPath.replace(/\/index\.html$/, '/');
   });
 
   if (isStatic) {
@@ -77,7 +77,7 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .catch(() => {
-          return caches.match(request) || (url.pathname.endsWith('.html') ? caches.match(`${BASE}/ironlog.html`) : null);
+          return caches.match(request) || (url.pathname.endsWith('.html') ? caches.match(`${BASE}/index.html`) : null);
         })
     );
   }

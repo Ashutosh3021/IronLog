@@ -3,7 +3,7 @@
   "short_name": "IRON LOG",
   "description": "Comprehensive 5/3/1 Weightlifting Progress Tracker and Calculator for strength athletes.",
   "id": "ironlog-pwa",
-  "start_url": "/IronLog/ironlog.html",
+  "start_url": "/IronLog/index.html",
   "scope": "/IronLog/",
   "display": "standalone",
   "background_color": "#0f0f0f",
@@ -19,7 +19,7 @@
       "name": "Today's Lifts",
       "short_name": "Lifts",
       "description": "Go directly to today's workout",
-      "url": "/IronLog/ironlog.html#home",
+      "url": "/IronLog/index.html#home",
       "icons": [
         {
           "src": "/IronLog/Assets/logo.jpg",
@@ -31,7 +31,7 @@
       "name": "Statistics",
       "short_name": "Stats",
       "description": "View your progress charts",
-      "url": "/IronLog/ironlog.html#analytics",
+      "url": "/IronLog/index.html#analytics",,
       "icons": [
         {
           "src": "/IronLog/Assets/logo.jpg",

@@ -1080,8 +1080,8 @@ function initPWA() {
     }
 
     // Register immediately with explicit scope
-    const swPath = window.location.pathname.replace(/\/ironlog\.html.*$/, '/') + 'sw.js';
-    navigator.serviceWorker.register(swPath, { scope: window.location.pathname.replace(/\/ironlog\.html.*$/, '/'), updateViaCache: 'none' })
+    const swPath = window.location.pathname.replace(/\/index\.html.*$/, '/') + 'sw.js';
+    navigator.serviceWorker.register(swPath, { scope: window.location.pathname.replace(/\/index\.html.*$/, '/'), updateViaCache: 'none' })
       .then(registration => {
         console.log('[PWA] ServiceWorker registered with scope:', registration.scope);
         
