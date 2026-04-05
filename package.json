@@ -1,0 +1,14 @@
+{
+  "name": "ironlog-asset-manager",
+  "version": "1.0.0",
+  "description": "Asset management system for IRON LOG PWA",
+  "main": "manage-assets.js",
+  "scripts": {
+    "start": "node server.js",
+    "validate": "node asset-validator.js",
+    "manage": "node manage-assets.js",
+    "fix": "node manage-assets.js && node asset-validator.js"
+  },
+  "author": "Trae IDE",
+  "license": "ISC"
+}
