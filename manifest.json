@@ -31,7 +31,7 @@
       "name": "Statistics",
       "short_name": "Stats",
       "description": "View your progress charts",
-      "url": "/IronLog/index.html#analytics",,
+      "url": "/IronLog/index.html#analytics",
       "icons": [
         {
           "src": "/IronLog/Assets/logo.jpg",
