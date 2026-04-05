@@ -99,10 +99,10 @@ self.addEventListener('push', event => {
   const data = event.data ? event.data.json() : { title: 'IRON LOG', body: 'Time for your workout!' };
   const options = {
     body: data.body,
-    icon: './Assets/logo.jpg',
-    badge: './Assets/logo.jpg',
+    icon: `${BASE}/Assets/logo.ico`,
+    badge: `${BASE}/Assets/logo.ico`,
     vibrate: [100, 50, 100],
-    data: { url: './ironlog.html' }
+    data: { url: `${BASE}/index.html` }
   };
   event.waitUntil(self.registration.showNotification(data.title, options));
 });
