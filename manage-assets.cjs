@@ -1,13 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const MANIFEST_PATH = path.join(__dirname, 'manifest.json');
+const MANIFEST_PATH = path.join(__dirname, 'public', 'Assets', 'site.webmanifest');
 
 function updateManifestIcons() {
-    console.log('--- Updating manifest.json icons metadata ---');
-    
+    console.log('--- Updating public/Assets/site.webmanifest icon metadata ---');
+
     if (!fs.existsSync(MANIFEST_PATH)) {
-        console.error('Error: manifest.json not found!');
+        console.error('Error: public/Assets/site.webmanifest not found!');
         return;
     }
 
@@ -19,9 +19,7 @@ function updateManifestIcons() {
         changed = true;
     }
 
-    // Ensure each icon has a valid purpose field
-    manifest.icons.forEach(icon => {
-        // Remove invalid 'iscons' field if present (not a PWA spec field)
+    manifest.icons.forEach((icon) => {
         if ('iscons' in icon) {
             console.log(`[FIX] Removing invalid "iscons" field from icon: ${icon.src}`);
             delete icon.iscons;
@@ -29,16 +27,16 @@ function updateManifestIcons() {
         }
         if (!icon.purpose) {
             console.log(`[FIX] Assigning purpose: "any" to icon: ${icon.src}`);
-            icon.purpose = "any";
+            icon.purpose = 'any';
             changed = true;
         }
     });
 
     if (changed) {
         fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2));
-        console.log('--- manifest.json updated successfully. ---');
+        console.log('--- site.webmanifest updated successfully. ---');
     } else {
-        console.log('--- No changes needed in manifest.json. ---');
+        console.log('--- No changes needed in site.webmanifest. ---');
     }
 }
 
