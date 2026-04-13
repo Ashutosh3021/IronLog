@@ -53,14 +53,16 @@ async function saveLiftScoresToSupabase(
   sb: ReturnType<typeof getSupabase>,
   userId: string,
   session: Session,
+  onError?: (msg: string) => void,
 ) {
   if (!sb || !userId) return
+  const errors: string[] = []
   for (const lift of LIFT_KEYS) {
     const sets = session.lifts[lift].sets
     for (let i = 0; i < sets.length; i++) {
       const set = sets[i]
       if (set.actualReps || set.done) {
-        await sb.rpc('record_lift_set', {
+        const { error } = await sb.rpc('record_lift_set', {
           p_user_id: userId,
           p_date: session.date,
           p_week: session.week,
@@ -72,8 +74,14 @@ async function saveLiftScoresToSupabase(
           p_actual_reps: set.actualReps || null,
           p_done: set.done,
         })
+        if (error) {
+          errors.push(`${lift} set${i + 1}: ${error.message}`)
+        }
       }
     }
+  }
+  if (errors.length > 0 && onError) {
+    onError(`⚠ Some scores not saved: ${errors.join(', ')}`)
   }
 }
 
@@ -360,7 +368,7 @@ export function IronLogProvider({
       setTimeout(() => showToast('✅ SESSION SAVED!'), 0)
       
       if (userId) {
-        setTimeout(() => saveLiftScoresToSupabase(sb, userId, sessionToSave), 0)
+        setTimeout(() => saveLiftScoresToSupabase(sb, userId, sessionToSave, showToast), 0)
       }
       
       return {
@@ -432,14 +440,20 @@ export function IronLogProvider({
         showToast('⚠ Enter all Training Maxes!')
         return
       }
-      setState((s) => ({
-        ...s,
-        tm: payload.tm,
-        inc: payload.inc,
-        cycle: payload.cycle,
-        week: Math.min(4, Math.max(1, payload.week)),
-        currentSession: null,
-      }))
+      const week = Math.min(4, Math.max(1, payload.week))
+      setState((s) => {
+        const newState = {
+          ...s,
+          tm: payload.tm,
+          inc: payload.inc,
+          cycle: payload.cycle,
+          week,
+          currentSession: null,
+        }
+        // Rehydrate session after settings change - useLayoutEffect won't run since week/cycle may not change
+        const hydrated = hydrateSession(newState)
+        return { ...newState, currentSession: hydrated }
+      })
       showToast('✅ SETTINGS SAVED!')
     },
     [showToast],
