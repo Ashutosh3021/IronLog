@@ -12,12 +12,38 @@ export function HomePage() {
     toggleSetDone,
     saveSession,
     confirmNextWeek,
+    refreshState,
   } = useIronLog()
 
   const session = state.currentSession
   const prog = PROGRAM[state.week]
 
-  if (!session) return null
+  if (!session) {
+    return (
+      <>
+        <div className="section-label">PROGRAM WEEK</div>
+        <div className="week-grid">
+          {([1, 2, 3, 4] as const).map((w) => (
+            <button
+              key={w}
+              type="button"
+              className={`week-chip${state.week === w ? ' active' : ''}${w === 4 ? ' deload' : ''}`}
+              onClick={() => selectWeek(w)}
+            >
+              <div className="wk-num">W{w}</div>
+              <div className="wk-type">{PROGRAM[w].type}</div>
+            </button>
+          ))}
+        </div>
+        <div style={{ padding: 32, textAlign: 'center' }}>
+          <p style={{ opacity: 0.7, marginBottom: 16 }}>No active session</p>
+          <button type="button" className="save-btn" onClick={refreshState}>
+            🔄 RELOAD
+          </button>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>

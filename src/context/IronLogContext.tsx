@@ -150,6 +150,7 @@ export interface IronLogContextValue {
   updateSetReps: (lift: LiftKey, idx: number, val: string) => void
   toggleSetDone: (lift: LiftKey, idx: number) => void
   saveSession: () => void
+  refreshState: () => void
   confirmNextWeek: () => void
   deleteSession: (index: number) => void
   saveSettings: (payload: {
@@ -485,6 +486,13 @@ export function IronLogProvider({
     setOpenLift((o) => ({ ...o, [lift]: !o[lift] }))
   }, [])
 
+  const refreshState = useCallback(() => {
+    const loaded = loadState()
+    const hydrated = hydrateSession(loaded)
+    setState({ ...loaded, currentSession: hydrated })
+    showToast('🔄 Reloaded')
+  }, [showToast])
+
   const value = useMemo<IronLogContextValue>(
     () => ({
       ready,
@@ -503,6 +511,7 @@ export function IronLogProvider({
       updateSetReps,
       toggleSetDone,
       saveSession,
+      refreshState,
       confirmNextWeek,
       deleteSession,
       saveSettings,
@@ -532,6 +541,7 @@ export function IronLogProvider({
       updateSetReps,
       toggleSetDone,
       saveSession,
+      refreshState,
       confirmNextWeek,
       deleteSession,
       saveSettings,
