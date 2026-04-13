@@ -118,6 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await sb.auth.signOut()
         throw insErr
       }
+      await new Promise((r) => setTimeout(r, 100))
       await refreshProfile()
     },
     [refreshProfile],

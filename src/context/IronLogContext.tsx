@@ -354,10 +354,13 @@ export function IronLogProvider({
         setTimeout(() => showToast('⚠ Log at least one set!'), 0)
         return s
       }
+      
+      const sessionToSave = sess
+      
       setTimeout(() => showToast('✅ SESSION SAVED!'), 0)
       
       if (userId) {
-        saveLiftScoresToSupabase(sb, userId, sess)
+        setTimeout(() => saveLiftScoresToSupabase(sb, userId, sessionToSave), 0)
       }
       
       return {
