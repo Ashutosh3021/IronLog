@@ -49,6 +49,34 @@ function saveToDisk(state: IronLogState) {
   bumpLocalRev()
 }
 
+async function saveLiftScoresToSupabase(
+  sb: ReturnType<typeof getSupabase>,
+  userId: string,
+  session: Session,
+) {
+  if (!sb || !userId) return
+  for (const lift of LIFT_KEYS) {
+    const sets = session.lifts[lift].sets
+    for (let i = 0; i < sets.length; i++) {
+      const set = sets[i]
+      if (set.actualReps || set.done) {
+        await sb.rpc('record_lift_set', {
+          p_user_id: userId,
+          p_date: session.date,
+          p_week: session.week,
+          p_cycle: session.cycle,
+          p_lift_type: lift,
+          p_set_number: i + 1,
+          p_weight_kg: set.weight,
+          p_target_reps: typeof set.targetReps === 'string' ? parseInt(set.targetReps) || 0 : set.targetReps,
+          p_actual_reps: set.actualReps || null,
+          p_done: set.done,
+        })
+      }
+    }
+  }
+}
+
 function emptySession(week: number, cycle: number): Session {
   return {
     date: new Date().toISOString().split('T')[0],
@@ -98,6 +126,7 @@ function hydrateSession(s: IronLogState): Session {
 }
 
 export interface IronLogContextValue {
+  ready: boolean
   state: IronLogState
   page: PageId
   setPage: (p: PageId) => void
@@ -167,6 +196,12 @@ export function IronLogProvider({
 
   const fileProtocolWarning = window.location.protocol === 'file:'
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), 50)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     saveToDisk(state)
@@ -302,6 +337,7 @@ export function IronLogProvider({
   }, [])
 
   const saveSession = useCallback(() => {
+    const sb = getSupabase()
     setState((s) => {
       const cs = s.currentSession ? hydrateSession(s) : null
       if (!cs) {
@@ -319,13 +355,18 @@ export function IronLogProvider({
         return s
       }
       setTimeout(() => showToast('✅ SESSION SAVED!'), 0)
+      
+      if (userId) {
+        saveLiftScoresToSupabase(sb, userId, sess)
+      }
+      
       return {
         ...s,
         sessions: [...s.sessions, sess],
         currentSession: null,
       }
     })
-  }, [showToast])
+  }, [showToast, userId])
 
   const confirmNextWeek = useCallback(() => {
     const cur = stateRef.current
@@ -429,6 +470,7 @@ export function IronLogProvider({
 
   const value = useMemo<IronLogContextValue>(
     () => ({
+      ready,
       state,
       page,
       setPage,
@@ -457,8 +499,10 @@ export function IronLogProvider({
       fileProtocolWarning,
     }),
     [
+      ready,
       state,
       page,
+      setPage,
       toast,
       showToast,
       modal,

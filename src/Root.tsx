@@ -1,8 +1,23 @@
 import App from './App'
-import { IronLogProvider } from './context/IronLogContext'
+import { IronLogProvider, useIronLog } from './context/IronLogContext'
 import { useAuth } from './context/AuthContext'
 import { isSupabaseConfigured } from './lib/supabase'
 import { LoginPage } from './pages/LoginPage'
+
+function LoadingScreen() {
+  return (
+    <div className="page active" style={{ padding: 32, textAlign: 'center' }}>
+      <div className="section-label">IRON LOG</div>
+      <p style={{ marginTop: 12, opacity: 0.85 }}>Loading…</p>
+    </div>
+  )
+}
+
+function AppWithLoading() {
+  const { ready } = useIronLog()
+  if (!ready) return <LoadingScreen />
+  return <App />
+}
 
 export function Root() {
   const auth = useAuth()
@@ -10,7 +25,7 @@ export function Root() {
   if (!isSupabaseConfigured()) {
     return (
       <IronLogProvider userId={null} serverHydrate={null}>
-        <App />
+        <AppWithLoading />
       </IronLogProvider>
     )
   }
@@ -34,7 +49,7 @@ export function Root() {
       userId={auth.profile.id}
       serverHydrate={{ state: auth.profile.app_state, updatedAt: auth.profile.updated_at }}
     >
-      <App />
+      <AppWithLoading />
     </IronLogProvider>
   )
 }
